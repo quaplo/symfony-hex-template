@@ -61,6 +61,10 @@ Obsahuje celú infraštruktúru pre Event Sourcing, ready-to-use CQRS buses a ar
 ```
 src/
 ├── Kernel.php
+├── Authorization/                          # Bounded Context: autorizácia
+│   └── Domain/
+│       ├── TokenValidator.php             # Port (interface): isValid(string): bool
+│       └── BearerTokenValidator.php       # Implementácia: validuje voči zoznamu z config
 ├── Infrastructure/
 │   ├── Bus/
 │   │   ├── SymfonyCommandBus.php
@@ -70,6 +74,8 @@ src/
 │   │   └── FrequencyBasedSnapshotStrategy.php
 │   ├── Http/
 │   │   ├── Controller/BaseController.php
+│   │   ├── EventListener/
+│   │   │   └── BearerTokenRequestListener.php  # kernel.request middleware (priorita 100)
 │   │   └── Exception/ValidationException.php
 │   └── Persistence/
 │       ├── Doctrine/Entity/EventStoreEntity.php
@@ -149,6 +155,59 @@ docker build -t my-app .
 docker run --rm my-app composer phpstan
 docker run --rm my-app composer phpcs
 docker run --rm my-app composer test
+```
+
+---
+
+## Autorizácia (Bearer Token)
+
+Každý HTTP request musí obsahovať `Authorization: Bearer <token>` header. Token sa overuje voči zoznamu nakonfigurovaných tokenov.
+
+### Ako to funguje
+
+```
+HTTP Request
+  → BearerTokenRequestListener (kernel.request, priorita 100)
+      → extrakt tokenu z hlavičky Authorization: Bearer <token>
+      → TokenValidator::isValid(token)
+          → porovnanie voči zoznamu z config/packages/authorization.yaml
+      → false → JsonResponse(401, {"error": "Unauthorized"})  [reťaz sa zastaví]
+      → true  → request pokračuje ďalej
+```
+
+### Konfigurácia tokenov
+
+`config/packages/authorization.yaml`:
+```yaml
+parameters:
+    authorization.tokens:
+        - '%env(AUTH_TOKEN)%'
+```
+
+`.env`:
+```env
+AUTH_TOKEN=demo-token-change-me
+```
+
+### Testovanie
+
+```bash
+# Bez tokenu → 401
+curl -i http://localhost:8000/
+
+# Neplatný token → 401
+curl -i -H "Authorization: Bearer zly-token" http://localhost:8000/
+
+# Platný token → pokračuje na routing
+curl -i -H "Authorization: Bearer demo-token-change-me" http://localhost:8000/
+```
+
+### Použitie TokenValidator inde
+
+`TokenValidator` je port (interface) — injectovateľný kdekoľvek (controller, command handler):
+
+```php
+public function __construct(private TokenValidator $validator) {}
 ```
 
 ---

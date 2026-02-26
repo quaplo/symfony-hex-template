@@ -205,6 +205,9 @@ docker exec <app-container> composer doctrine:migrate:test
 
 ## Important Notes
 
+- **kernel.request priority**: `RouterListener` beží na priorite 32 — auth/middleware listenery musia mať prioritu > 32 (odporúčané: 100), inak sa nespustia pre neexistujúce routes
+- **config/packages/ only**: `MicroKernelTrait` auto-loaduje len `config/packages/*.yaml` — custom config (napr. `authorization.yaml`) musí byť v `config/packages/`, nie v `config/`
+- **Docker env reload**: `docker compose restart` NEreloaduje `.env` — treba `docker compose up -d --force-recreate <service>`
 - **PHP 8.4+** required with modern features enabled
 - **PostgreSQL** recommended for JSON event data extraction
 - All aggregates must extend `AggregateRoot`

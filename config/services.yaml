@@ -43,10 +43,13 @@ services:
         arguments:
             $messageBus: '@query.bus'
 
-    # Bearer token middleware
-    App\Infrastructure\Http\EventListener\BearerTokenRequestListener:
+    # Authorization domain
+    App\Authorization\Domain\BearerTokenValidator:
         arguments:
-            $authToken: '%env(AUTH_TOKEN)%'
+            $allowedTokens: '%authorization.tokens%'
+    App\Authorization\Domain\TokenValidator: '@App\Authorization\Domain\BearerTokenValidator'
+
+    # Bearer token middleware (autowired via TokenValidator)
 
     # Event Serializers
     App\Infrastructure\Event\CompositeEventSerializer:

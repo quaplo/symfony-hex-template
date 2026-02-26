@@ -1,0 +1,3 @@
+parameters:
+    authorization.tokens:
+        - '%env(AUTH_TOKEN)%'
