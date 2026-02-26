@@ -2,23 +2,23 @@ parameters:
     paths:
         - ./src
     layers:
-        # Context-specific Domain layers
+        # Context-specific Domain layers (add new contexts here, e.g. 'src/(MyContext)/Domain')
         - name: Domain
           collectors:
               - type: directory
-                value: 'src/(Project|User)/Domain'
-        
-        # Context-specific Application layers
+                value: 'src/(?!Shared|Infrastructure)[^/]+/Domain'
+
+        # Context-specific Application layers (add new contexts here)
         - name: Application
           collectors:
               - type: directory
-                value: 'src/(Project|User)/Application'
-        
-        # Context-specific Infrastructure layers
+                value: 'src/(?!Shared|Infrastructure)[^/]+/Application'
+
+        # Context-specific Infrastructure layers (add new contexts here)
         - name: Infrastructure
           collectors:
               - type: directory
-                value: 'src/(Project|User)/Infrastructure'
+                value: 'src/(?!Shared)[^/]+/Infrastructure'
               - type: directory
                 value: 'src/Infrastructure'
         

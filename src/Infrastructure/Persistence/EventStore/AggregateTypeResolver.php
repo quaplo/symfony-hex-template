@@ -31,10 +31,12 @@ final readonly class AggregateTypeResolver
         // For structure like App\Domain\Event\EventName → extract App\Domain
         // For structure like App\Project\Domain\Event\EventName → extract App\Project
         if (\count($namespaceParts) < 3) {
-            throw new InvalidArgumentException(\sprintf('Invalid event class namespace structure: %s', $eventClassName));
+            throw new InvalidArgumentException(
+                \sprintf('Invalid event class namespace structure: %s', $eventClassName)
+            );
         }
 
         // Default fallback - take first 2 namespace parts
-        return $namespaceParts[0].'\\'.$namespaceParts[1];
+        return $namespaceParts[0] . '\\' . $namespaceParts[1];
     }
 }

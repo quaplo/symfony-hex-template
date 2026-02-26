@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Infrastructure\Persistence\EventStore;
 
 use App\Infrastructure\Persistence\Doctrine\Entity\EventStoreEntity;
-use App\Project\Domain\Event\ProjectCreatedEvent;
 use App\Shared\ValueObject\Uuid;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +16,7 @@ final class CompoundPrimaryKeyTest extends TestCase
         $uuid = Uuid::generate();
         $version = 1;
         $aggregateType = 'App\\Project';
-        $eventType = ProjectCreatedEvent::class;
+        $eventType = 'App\\Project\\Domain\\Event\\ProjectCreatedEvent';
         $eventData = '{"test": "data"}';
         $occurredAt = new DateTimeImmutable();
 
@@ -45,13 +44,14 @@ final class CompoundPrimaryKeyTest extends TestCase
     {
         $uuid = Uuid::generate();
         $occurredAt = new DateTimeImmutable();
+        $eventType = 'App\\Project\\Domain\\Event\\ProjectCreatedEvent';
 
         // Same aggregate, different versions should be unique
         $entity1 = new EventStoreEntity(
             $uuid->toString(),
             1,
             'App\\Project',
-            ProjectCreatedEvent::class,
+            $eventType,
             '{"test": "data1"}',
             $occurredAt
         );
@@ -60,7 +60,7 @@ final class CompoundPrimaryKeyTest extends TestCase
             $uuid->toString(),
             2,
             'App\\Project',
-            ProjectCreatedEvent::class,
+            $eventType,
             '{"test": "data2"}',
             $occurredAt
         );
@@ -82,7 +82,7 @@ final class CompoundPrimaryKeyTest extends TestCase
             $uuid->toString(),
             $version,
             'App\\Project',
-            ProjectCreatedEvent::class,
+            'App\\Project\\Domain\\Event\\ProjectCreatedEvent',
             '{"test": "data1"}',
             $occurredAt
         );
@@ -108,7 +108,7 @@ final class CompoundPrimaryKeyTest extends TestCase
             Uuid::generate()->toString(),
             1,
             'App\\Project',
-            ProjectCreatedEvent::class,
+            'App\\Project\\Domain\\Event\\ProjectCreatedEvent',
             '{"test": "data"}',
             new DateTimeImmutable()
         );

@@ -20,7 +20,3 @@ framework:
             event.bus:
                 default_middleware: allow_no_handlers
         
-        # Routing configuration
-        routing:
-            # Route integration events to async transport
-            'App\Shared\Domain\Event\UserDeletedIntegrationEvent': async_events

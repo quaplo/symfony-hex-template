@@ -14,7 +14,7 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: hex_notes
+      POSTGRES_DB: symfony_hex_template
       POSTGRES_USER: symfony
       POSTGRES_PASSWORD: symfony
     ports:
@@ -36,7 +36,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.13-management
-    container_name: hex_notes_rabbitmq
+    container_name: symfony_hex_template_rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin123

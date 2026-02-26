@@ -43,8 +43,9 @@ abstract class BaseController
     /**
      * Create validation error response.
      */
-    protected function createValidationErrorResponse(ConstraintViolationListInterface $constraintViolationList): JsonResponse
-    {
+    protected function createValidationErrorResponse(
+        ConstraintViolationListInterface $constraintViolationList
+    ): JsonResponse {
         $errors = [];
 
         foreach ($constraintViolationList as $violation) {

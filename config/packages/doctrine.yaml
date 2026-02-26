@@ -24,18 +24,6 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Entity'
                 prefix: 'App\Infrastructure\Persistence\Doctrine\Entity'
                 alias: App
-            User:
-                is_bundle: false
-                type: attribute
-                dir: '%kernel.project_dir%/src/User/Infrastructure/Persistence/Doctrine/Entity'
-                prefix: 'App\User\Infrastructure\Persistence\Doctrine\Entity'
-                alias: User
-            Project:
-                is_bundle: false
-                type: attribute
-                dir: '%kernel.project_dir%/src/Project/Infrastructure/Persistence/ReadModel'
-                prefix: 'App\Project\Infrastructure\Persistence\ReadModel'
-                alias: Project
         controller_resolver:
             auto_mapping: false
 

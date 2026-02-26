@@ -26,18 +26,15 @@ interface EventStore
     public function getEventsFromVersion(Uuid $uuid, int $fromVersion): array;
 
     /**
-     * Find all aggregate IDs by owner ID from ProjectCreatedEvent.
-     *
-     * @return Uuid[]
-     */
-    public function findProjectAggregatesByOwnerId(Uuid $uuid): array;
-
-    /**
      * Get events for specific aggregate type and time range (optimized with aggregate_type index).
      *
      * @return DomainEvent[]
      */
-    public function getEventsByAggregateType(string $aggregateType, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array;
+    public function getEventsByAggregateType(
+        string $aggregateType,
+        ?DateTimeImmutable $from = null,
+        ?DateTimeImmutable $to = null
+    ): array;
 
     /**
      * Get events for specific aggregate type and aggregate ID (optimized with aggregate_type index).

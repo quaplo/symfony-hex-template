@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\EventStore;
 
-use App\Project\Domain\Event\ProjectCreatedEvent;
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Event\EventSerializer;
 use App\Shared\Event\EventStore;
@@ -33,7 +32,9 @@ final readonly class DoctrineEventStore implements EventStore
             $currentVersion = $this->getCurrentVersion($uuid);
 
             if ($currentVersion !== $expectedVersion) {
-                throw new RuntimeException(\sprintf('Concurrency conflict: expected version %d, got %d', $expectedVersion, $currentVersion));
+                throw new RuntimeException(
+                    \sprintf('Concurrency conflict: expected version %d, got %d', $expectedVersion, $currentVersion)
+                );
             }
 
             $nextVersion = $expectedVersion + 1;
@@ -89,29 +90,11 @@ final readonly class DoctrineEventStore implements EventStore
         return $events;
     }
 
-    public function findProjectAggregatesByOwnerId(Uuid $uuid): array
-    {
-        // Optimized query using aggregate_type index
-        $sql = 'SELECT DISTINCT aggregate_id FROM event_store
-                WHERE aggregate_type = ? AND event_type = ? AND event_data->>\'ownerId\' = ?';
-
-        $statement = $this->connection->prepare($sql);
-        $statement->bindValue(1, 'App\\Project', Types::STRING);
-        $statement->bindValue(2, ProjectCreatedEvent::class, Types::STRING);
-        $statement->bindValue(3, $uuid->toString(), Types::STRING);
-        $result = $statement->executeQuery();
-
-        $aggregateIds = [];
-
-        while ($row = $result->fetchAssociative()) {
-            $aggregateIds[] = Uuid::create($row['aggregate_id']);
-        }
-
-        return $aggregateIds;
-    }
-
-    public function getEventsByAggregateType(string $aggregateType, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array
-    {
+    public function getEventsByAggregateType(
+        string $aggregateType,
+        ?DateTimeImmutable $from = null,
+        ?DateTimeImmutable $to = null
+    ): array {
         $sql = 'SELECT event_data, event_type, version FROM event_store WHERE aggregate_type = ?';
         $params = [$aggregateType];
         $types = [Types::STRING];

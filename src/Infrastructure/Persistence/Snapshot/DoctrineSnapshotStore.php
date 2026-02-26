@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Snapshot;
 
-use App\Project\Domain\Model\ProjectSnapshot;
 use App\Shared\Domain\Model\AggregateSnapshot;
 use App\Shared\Event\SnapshotStore;
 use App\Shared\ValueObject\Uuid;
@@ -182,11 +181,10 @@ final readonly class DoctrineSnapshotStore implements SnapshotStore
         $version = (int) $row['version'];
         $data = json_decode((string) $row['data'], true, 512, \JSON_THROW_ON_ERROR);
 
-        // Factory pattern based on aggregate type
-        return match ($row['aggregate_type']) {
-            'Project' => ProjectSnapshot::create($uuid, $version, $data),
-            default => throw new RuntimeException('Unknown aggregate type: '.$row['aggregate_type']),
-        };
+        throw new RuntimeException(
+            'No snapshot factory registered for aggregate type: ' . $row['aggregate_type'] .
+            '. Implement snapshot creation in your bounded context.'
+        );
     }
 
     /**
@@ -201,6 +199,6 @@ final readonly class DoctrineSnapshotStore implements SnapshotStore
             return $matches[1];
         }
 
-        throw new RuntimeException('Cannot determine aggregate type from snapshot class: '.$className);
+        throw new RuntimeException('Cannot determine aggregate type from snapshot class: ' . $className);
     }
 }

@@ -23,7 +23,7 @@ services:
         resource: '../src/Infrastructure/Http/Controller'
         tags: ['controller.service_arguments']
         public: true
-    
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -31,127 +31,39 @@ services:
     # Bus implementations
     App\Shared\Application\CommandBus: '@App\Infrastructure\Bus\SymfonyCommandBus'
     App\Shared\Application\QueryBus: '@App\Infrastructure\Bus\SymfonyQueryBus'
-    
+
     # Command Bus configuration
     App\Infrastructure\Bus\SymfonyCommandBus:
         arguments:
             $messageBus: '@command.bus'
-    
+
     # Query Bus configuration
     App\Infrastructure\Bus\SymfonyQueryBus:
         arguments:
             $messageBus: '@query.bus'
-    
-    # Command Handlers
-    App\Project\Application\Command\:
-        resource: '../src/Project/Application/Command/*/*Handler.php'
-        tags:
-            - { name: messenger.message_handler, bus: command.bus }
-    
-    App\User\Application\Command\:
-        resource: '../src/User/Application/Command/*/*Handler.php'
-        tags:
-            - { name: messenger.message_handler, bus: command.bus }
-    
-    # Query Handlers
-    App\Project\Application\Query\:
-        resource: '../src/Project/Application/Query/*/*Handler.php'
-        tags:
-            - { name: messenger.message_handler, bus: query.bus }
-            
-    App\User\Application\Query\:
-        resource: '../src/User/Application/Query/*/*Handler.php'
-        tags:
-            - { name: messenger.message_handler, bus: query.bus }
-            
-    # Cross-Domain Query Handlers
-    App\Shared\Application\CrossDomain\Query\:
-        resource: '../src/Shared/Application/CrossDomain/Query/*Handler.php'
-        tags:
-            - { name: messenger.message_handler, bus: query.bus }
-
-    # Event Handlers for domain events
-    App\User\Application\EventHandler\UserDeletedDomainEventHandler:
-        arguments:
-            $eventBus: '@event.bus'
-        tags:
-            - { name: kernel.event_listener, event: 'App\User\Domain\Event\UserDeletedEvent' }
-    
-    # Integration Event Handlers - now async via messenger
-    App\Project\Application\EventHandler\UserDeletedIntegrationEventHandler:
-        arguments:
-            $commandBus: '@App\Shared\Application\CommandBus'
-        tags:
-            - { name: messenger.message_handler }
-    
-    # Project Event Handlers for read model projection and side effects
-    App\Project\Application\EventHandler\ProjectEventHandler:
-        tags:
-            - { name: kernel.event_listener, event: 'App\Project\Domain\Event\ProjectCreatedEvent' }
-            - { name: kernel.event_listener, event: 'App\Project\Domain\Event\ProjectRenamedEvent' }
-            - { name: kernel.event_listener, event: 'App\Project\Domain\Event\ProjectDeletedEvent' }
-            - { name: kernel.event_listener, event: 'App\Project\Domain\Event\ProjectWorkerAddedEvent' }
-            - { name: kernel.event_listener, event: 'App\Project\Domain\Event\ProjectWorkerRemovedEvent' }
 
     # Event Serializers
-    App\Project\Infrastructure\Event\ProjectEventSerializer: ~
-    App\User\Infrastructure\Event\UserEventSerializer: ~
-    App\Shared\Event\UserDeletedIntegrationEventSerializer: ~
-
     App\Infrastructure\Event\CompositeEventSerializer:
-        arguments:
-            - '@App\Project\Infrastructure\Event\ProjectEventSerializer'
-            - '@App\User\Infrastructure\Event\UserEventSerializer'
-            - '@App\Shared\Event\UserDeletedIntegrationEventSerializer'
+        arguments: []
 
     App\Shared\Event\EventSerializer: '@App\Infrastructure\Event\CompositeEventSerializer'
     App\Shared\Event\EventDispatcher: '@App\Shared\Infrastructure\Event\DomainEventDispatcher'
     App\Shared\Event\EventStore: '@App\Infrastructure\Persistence\EventStore\DoctrineEventStore'
-    App\Project\Domain\Repository\ProjectRepositoryInterface: '@App\Infrastructure\Persistence\EventStore\ProjectEventStoreRepository'
-    
+
     # Event Store components
     App\Infrastructure\Persistence\EventStore\AggregateTypeResolver: ~
-    
+
     # Snapshot components
     App\Shared\Event\SnapshotStore: '@App\Infrastructure\Persistence\Snapshot\DoctrineSnapshotStore'
     App\Shared\Event\SnapshotStrategy: '@App\Infrastructure\Event\FrequencyBasedSnapshotStrategy'
-    
+
     App\Infrastructure\Persistence\Snapshot\DoctrineSnapshotStore:
         arguments:
             $connection: '@doctrine.dbal.default_connection'
-    
+
     App\Infrastructure\Event\FrequencyBasedSnapshotStrategy:
         arguments:
             $snapshotFrequency: 10  # Create snapshot every 10 events
-    
-    App\Project\Domain\Model\ProjectSnapshotFactory: ~
-    
-    # Read Model Repository
-    App\Project\Infrastructure\Persistence\ReadModel\ProjectReadModelRepository: ~
-    
-    # Read Model Projection
-    App\Project\Infrastructure\Projection\ProjectReadModelProjection: ~
-    
-    # Optimized Query Handlers
-    App\Project\Application\Query\Find\FindProjectsByOwnerOptimizedHandler:
-        tags:
-            - { name: messenger.message_handler, bus: query.bus }
-    
-    # Interface bindings for Application layer (Clean Architecture)
-    
-    # Project Application Interfaces
-    App\Project\Application\Projection\ProjectReadModelProjectionInterface: '@App\Project\Infrastructure\Projection\ProjectReadModelProjection'
-    App\Project\Application\ReadModel\ProjectReadModelRepositoryInterface: '@App\Project\Infrastructure\Persistence\ReadModel\ProjectReadModelRepository'
-    App\Project\Application\Mapper\ProjectDtoMapperInterface: '@App\Project\Infrastructure\Mapper\ProjectDtoMapper'
-    
-    # User Application Interfaces
-    App\User\Application\Mapper\UserDtoMapperInterface: '@App\User\Infrastructure\Mapper\UserDtoMapper'
-    
-    # Shared Application Interfaces
-    App\Shared\Application\Mapper\ProjectDtoMapperInterface: '@App\Project\Infrastructure\Mapper\SharedProjectDtoMapper'
-    
-    # Legacy Infrastructure HTTP interfaces (keep for backward compatibility)
-    App\Infrastructure\Http\Mapper\ProjectDtoMapperInterface: '@App\Infrastructure\Http\Mapper\ProjectDtoMapper'
-    
+
     # Domain Event Dispatcher
     App\Shared\Infrastructure\Event\DomainEventDispatcher: ~
