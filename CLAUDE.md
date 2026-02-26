@@ -3,6 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Development Commands
+- Language preference: Slovak (user's preferred language for responses)
 
 ### Testing
 - `composer test` - Run Pest tests
