@@ -132,18 +132,27 @@ src/
 git clone <repository-url>
 cd symfony-hex-template
 
-# Zostaviť image a spustiť kontajnery
-docker-compose up -d
+# Nastaviť env premenné
+cp .env .env.local
+# Upraviť AUTH_TOKEN v .env.local:
+# AUTH_TOKEN=tvoj-tajny-token
 
-# Nainštalovať závislosti
-docker exec <app-container> composer install
+# Zostaviť image a spustiť kontajnery
+docker compose up -d
 
 # Aplikovať migrácie
-docker exec <app-container> composer doctrine:migrate
-
-# Aplikovať migrácie pre testovú DB
-docker exec <app-container> composer doctrine:migrate:test
+docker compose exec app composer doctrine:migrate
 ```
+
+### Env premenné
+
+| Premenná | Popis | Default |
+|----------|-------|---------|
+| `AUTH_TOKEN` | Bearer token pre autorizáciu API requestov | `demo-token-change-me` |
+| `DATABASE_URL` | PostgreSQL connection string | viz `.env` |
+| `RABBITMQ_DSN` | RabbitMQ connection string | viz `.env` |
+
+> Po zmene `.env.local` treba reštartovať kontajner s `docker compose up -d --force-recreate app`.
 
 ### Spustenie nástrojov (bez docker-compose)
 

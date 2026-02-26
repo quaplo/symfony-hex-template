@@ -7,4 +7,3 @@
 controllers:
   resource: '../src/Infrastructure/Http/Controller/'
   type: attribute
-zapamataj si: cielom je udrzat abstrakciu na urovni rovnovahy toho co dokaze do nekonecna rozsirovat samotny system a jeho ekosystem skalovat donekonecna vs kognitivna schopnost cloveka zapamatat si architekturu a zakladne premisy systemu ako celku, hladaj balance na konci riadku, zjednodusuj system tam kde je to udrzatelne do buducna a zvysovanie komplexity dokaze dat zmysel cloveku a jeho chapaniu procesov.
