@@ -25,6 +25,7 @@ services:
         public: true
 
 
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
@@ -41,6 +42,11 @@ services:
     App\Infrastructure\Bus\SymfonyQueryBus:
         arguments:
             $messageBus: '@query.bus'
+
+    # Bearer token middleware
+    App\Infrastructure\Http\EventListener\BearerTokenRequestListener:
+        arguments:
+            $authToken: '%env(AUTH_TOKEN)%'
 
     # Event Serializers
     App\Infrastructure\Event\CompositeEventSerializer:
